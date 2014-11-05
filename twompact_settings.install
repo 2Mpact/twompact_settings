@@ -1,0 +1,184 @@
+<?php
+/**
+ * Hier laten we aan Drupal weten wat de standaard fieldsets en velden zijn voor deze module.
+ *
+ * Er zijn 2 verschillende arrays: fieldsets en fields.
+ *
+ * De array fieldsets bevat de mogelijke fieldsets waar er velden in verzameld kunnen worden op het uiteindelijke
+ * formulier.  De array bevat enkel de naam van de fieldset (dat we in de array fields gebruiken om aan te duiden in welke
+ * fieldset het veld moet/mag komen) en de legende voor de fieldset, verder is er weinig informatie nodig.
+ * Standaard opbouw van de fieldset array:
+ *
+ * array(
+ *   'KEY' => array(
+ *     'legend' => 'NAAM VAN LEGENDE',
+ *   )
+ * )
+ *
+ * KEY: de naam is die in de array $fields gebruikt zal worden om bij een veld te duiden tot welke fieldset het behoort
+ * NAAM VAN LEGENDE: de tekst is die in de legende van de fieldset getoond zal worden.
+ *
+ * De array fields bevat alle mogelijke velden die op het formulier geprint zullen worden.  De array bevat de key onder
+ * welke het veld zal opgeslagen worden in de database in de tabel variable.  Het type van veld (momenteel enkel tekst),
+ * het label voor het veld, de replace tag (deze zal gebruikt worden om bij node loads deze tags te vervangen door de
+ * waarde in het veld en fieldset om te duiden of het veld in een fieldset met mogelijk andere velden moet getoond worden.
+ * Standaard opbouw van de fieldset array:
+ *
+ * array(
+ *   'FIELD KEY' => array(
+ *     'type' => 'TYPE VELD',
+ *     'label' => 'LABEL',
+ *     'replace_tag' => '[REPLACE TAG]',
+ *     'fieldset' => 'FIELDSET KEY',
+ *     'description' => 'DESCRIPTION', OPTIONAL
+ *   ),
+ * )
+ *
+ * FIELD KEY: de waarde waaronder de inhoud van dit veld in de database zal opgeslagen worden !!!OPGELET: bij Drupal-eigen
+ *      variabelen (site_slogan, site_name, ...) MOET deze waarde overeenkomen met de waarde waaronder Drupal dit opslaat
+ *      in de tabel variable, dit zodat we geen extra code moeten toevoegen om deze te vervangen op de website.
+ * TYPE VELD: het type veld op het formulier (enkel text momenteel)
+ * LABEL: het label voor dit veld op het formulier
+ * REPLACE TAG: de tag die doorheen de website zal vervangen worden door de inhoud van dit veld
+ * FIELDSET KEY: de KEY waarde die in de tabel fieldsets gebruikt wordt om een fieldset te duiden
+ * DESCRIPTION: beschrijving voor dit veld !!!OPGELET: deze waarde MOET in het Engels met de t() functie voor compatibiliteit
+ *      ifv meertalige websites.  Deze waarde is OPTIONEEL
+ */
+function twompact_settings_install() {
+  $fieldsets = array(
+    'contact' => array(
+      'legend' => t('Contact data'),
+    ),
+    'google_analytics' => array(
+      'legend' => 'Google Analytics',
+    ),
+  );
+
+  variable_set('twompact_settings_fieldsets', $fieldsets);
+
+  $multilang_fields = variable_get('variable_realm_list_language', array());
+
+  $fields = array(
+    'site_name' => array(
+      'type' => 'textfield',
+      'label' => t('Site name'),
+      'fieldset' => 'core',
+      'description' => t('The site name (usually the company name).'),
+      'multilang' => in_array('site_name', $multilang_fields),
+    ),
+    'site_slogan' => array(
+      'type' => 'textfield',
+      'label' => t('Site slogan'),
+      'replace_tag' => 'site-slogan',
+      'fieldset' => 'core',
+      'description' => t('The site slogan (usually the company slogan, if any).'),
+      'multilang' => in_array('site_name', $multilang_fields),
+    ),
+    'contact_bedrijf' => array(
+      'type' => 'textfield',
+      'label' => t('Company name'),
+      'replace_tag' => 'bedrijf',
+      'fieldset' => 'contact',
+      'description' => t('The name of the company.'),
+      'required' => TRUE,
+      'multilang' => TRUE,
+    ),
+    'contact_straat' => array(
+      'type' => 'textfield',
+      'label' => t('Street'),
+      'replace_tag' => 'straat',
+      'fieldset' => 'contact',
+      'description' => t('The street where the company is located (with number).'),
+      'required' => TRUE,
+      'multilang' => TRUE,
+    ),
+    'contact_postcode' => array(
+      'type' => 'textfield',
+      'label' => t('Postal code'),
+      'replace_tag' => 'postcode',
+      'fieldset' => 'contact',
+      'description' => t('The postal code of the city where the company is located.'),
+      'required' => TRUE,
+      'multilang' => TRUE,
+    ),
+    'contact_stad' => array(
+      'type' => 'textfield',
+      'label' => t('City'),
+      'replace_tag' => 'stad',
+      'fieldset' => 'contact',
+      'description' => t('The city where the company is located.'),
+      'required' => TRUE,
+      'multilang' => TRUE,
+    ),
+    'contact_telefoon' => array(
+      'type' => 'textfield',
+      'label' => t('Telephone'),
+      'replace_tag' => 'telefoon',
+      'fieldset' => 'contact',
+      'description' => t('The contact telephone number of the company.'),
+      'required' => TRUE,
+      'multilang' => TRUE,
+    ),
+    'contact_gsm' => array(
+      'type' => 'textfield',
+      'label' => t('Cellphone'),
+      'replace_tag' => 'gsm',
+      'fieldset' => 'contact',
+      'description' => t('The contact cellphone number of the company.'),
+      'multilang' => TRUE,
+    ),
+    'contact_email' => array(
+      'type' => 'textfield',
+      'label' => t('Email'),
+      'replace_tag' => 'email',
+      'fieldset' => 'contact',
+      'description' => t('The contact email address of the company.'),
+      'required' => TRUE,
+      'multilang' => TRUE,
+    ),
+    'contact_land' => array(
+      'type' => 'textfield',
+      'label' => t('Country'),
+      'replace_tag' => 'land',
+      'fieldset' => 'contact',
+      'description' => t('The country where the company is located.'),
+      'multilang' => TRUE,
+    ),
+    'googleanalytics_account' => array(
+      'type' => 'textfield',
+      'label' => t('Google Analytics account code'),
+      'fieldset' => 'google_analytics',
+      'access_control' => 'custom settings ga',
+      'description' => t('The account code for the Google Analytics account for this website (e.g.: UA-1111111-1).'),
+      'multilang' => FALSE,
+    ),
+  );
+
+  variable_set('twompact_settings_fields', $fields);
+
+  // standaard waarden toevoegen
+  variable_set('contact_bedrijf', '2Mpact N.V.');
+  variable_set('contact_straat', 'Kortrijksesteenweg 1007');
+  variable_set('contact_postcode', '9000');
+  variable_set('contact_stad', 'Gent');
+  variable_set('contact_telefoon', '+32 (0)9 233 48 66');
+  variable_set('contact_email', 'info@2mpact.be');
+  variable_set('contact_land', 'België');
+
+  // kijken of er meerdere talen zijn ingesteld en waar nodig de standaard waarden ingeven voor een multilang systeem
+  $languages = language_list();
+
+  if(!empty($languages) && is_array($languages)) {
+    foreach($languages as $language => $lang_data) {
+      variable_store_set('language', $language, 'contact_bedrijf', '2Mpact N.V.');
+      variable_store_set('language', $language, 'contact_straat', 'Kortrijksesteenweg 1007');
+      variable_store_set('language', $language, 'contact_postcode', '9000');
+      variable_store_set('language', $language, 'contact_stad', 'Gent');
+      variable_store_set('language', $language, 'contact_telefoon', '+32 (0)9 233 48 66');
+      variable_store_set('language', $language, 'contact_email', 'info@2mpact.be');
+      variable_store_set('language', $language, 'contact_land', 'België');
+    }
+  }
+}
+
+?>

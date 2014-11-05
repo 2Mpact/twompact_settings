@@ -1,0 +1,602 @@
+<?php
+
+function twompact_settings_menu() {
+  $items['admin/config/2mpact'] = array(
+    'title' => t('2Mpact'),
+    'position' => 'right',
+    'weight' => -5,
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('administer site configuration'),
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system')
+  );
+  $items['admin/config/2mpact/settings'] = array(
+    'title' => t('Custom settings'),
+    'description' => t('Set custom settings'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('twompact_settings_form'),
+    'access arguments' => array('administer custom settings'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
+* Implements hook_permission().
+*/
+function twompact_settings_permission() {
+    // Extra permissie aanmaken om te bepalen welke users toegang hebben tot de custom settings en een geavanceerde
+    // permissie voor bepaalde instellingen (zoals Google Analytics code)
+    return array(
+      'administer custom settings' => array(
+        'title' => t('Administer custom settings'),
+        'description' => t('Determines whether the logged in user has access to custom settings.'),
+      ),
+      'custom settings ga' => array(
+        'title' => t('Change Google Analytics code'),
+        'description' => t('Determines whether the logged in user may change the Google Analytics code for this website.'),
+      ),
+    );
+}
+
+/**
+ * Deze functie laat toe om de standaard fieldsets en fields bij te sturen na installatie van de module.  Na install
+ * bevat deze functie de standaard array van bij de install.  De array in het bestand twompact_settings.install NIET
+ * aanpassen.
+ *
+ * Als er nieuwe fieldsets/fields moeten bijkomen, doe de aanpassingen dan hier.  Elke keer het formulier wordt geopend,
+ * zal deze functie worden uitgevoerd.
+ *
+ * Er zijn 2 verschillende arrays: fieldsets en fields.
+ *
+ * De array fieldsets bevat de mogelijke fieldsets waar er velden in verzameld kunnen worden op het uiteindelijke
+ * formulier.  De array bevat enkel de naam van de fieldset (dat we in de array fields gebruiken om aan te duiden in welke
+ * fieldset het veld moet/mag komen) en de legende voor de fieldset, verder is er weinig informatie nodig.
+ * Standaard opbouw van de fieldset array:
+ *
+ * array(
+ *   'KEY' => array(
+ *     'legend' => 'NAAM VAN LEGENDE',
+ *   )
+ * )
+ *
+ * KEY: de naam is die in de array $fields gebruikt zal worden om bij een veld te duiden tot welke fieldset het behoort
+ * NAAM VAN LEGENDE: de tekst is die in de legende van de fieldset getoond zal worden.
+ *
+ * De array fields bevat alle mogelijke velden die op het formulier geprint zullen worden.  De array bevat de key onder
+ * welke het veld zal opgeslagen worden in de database in de tabel variable.  Het type van veld (momenteel enkel tekst),
+ * het label voor het veld, de replace tag (deze zal gebruikt worden om bij node loads deze tags te vervangen door de
+ * waarde in het veld en fieldset om te duiden of het veld in een fieldset met mogelijk andere velden moet getoond worden.
+ * Standaard opbouw van de fieldset array:
+ *
+ * array(
+ *   'FIELD KEY' => array(
+ *     'type' => 'TYPE VELD',
+ *     'label' => 'LABEL',
+ *     'replace_tag' => '[REPLACE TAG]',
+ *     'fieldset' => 'FIELDSET KEY',
+ *     'description' => 'DESCRIPTION', OPTIONAL
+ *   ),
+ * )
+ *
+ * FIELD KEY: de waarde waaronder de inhoud van dit veld in de database zal opgeslagen worden !!!OPGELET: bij Drupal-eigen
+ *      variabelen (site_slogan, site_name, ...) MOET deze waarde overeenkomen met de waarde waaronder Drupal dit opslaat
+ *      in de tabel variable, dit zodat we geen extra code moeten toevoegen om deze te vervangen op de website.
+ * TYPE VELD: het type veld op het formulier (enkel text momenteel)
+ * LABEL: het label voor dit veld op het formulier
+ * REPLACE TAG: de tag die doorheen de website zal vervangen worden door de inhoud van dit veld
+ * FIELDSET KEY: de KEY waarde die in de tabel fieldsets gebruikt wordt om een fieldset te duiden
+ * DESCRIPTION: beschrijving voor dit veld !!!OPGELET: deze waarde MOET in het Engels met de t() functie voor compatibiliteit
+ *      ifv meertalige websites.  Deze waarde is OPTIONEEL
+ */
+function twompact_settings_update_module_data() {
+  $fieldsets = array(
+    'core' => array(
+      'legend' => t('Standard settings'),
+      'collapsible' => TRUE,
+    ),
+    'contact' => array(
+      'legend' => t('Contact data'),
+      'collapsible' => TRUE,
+    ),
+    'contact_person' => array(
+      'legend' => t('Contact person'),
+      'collapsible' => TRUE,
+    ),
+    'google_analytics' => array(
+      'legend' => 'Google Analytics',
+      'collapsible' => TRUE,
+    ),
+  );
+
+  variable_set('twompact_settings_fieldsets', $fieldsets);
+
+  $multilang_fields = variable_get('variable_realm_list_language', array());
+
+  $fields = array(
+    'site_name' => array(
+      'type' => 'textfield',
+      'label' => t('Site name'),
+      'fieldset' => 'core',
+      'description' => t('The site name (usually the company name).'),
+      'multilang' => in_array('site_name', $multilang_fields),
+    ),
+    'site_slogan' => array(
+      'type' => 'textfield',
+      'label' => t('Site slogan'),
+      'replace_tag' => 'site-slogan',
+      'fieldset' => 'core',
+      'description' => t('The site slogan (usually the company slogan, if any).'),
+      'multilang' => in_array('site_name', $multilang_fields),
+    ),
+    'contact_bedrijf' => array(
+      'type' => 'textfield',
+      'label' => t('Company name'),
+      'replace_tag' => 'bedrijf',
+      'fieldset' => 'contact',
+      'description' => t('The name of the company.'),
+      'required' => TRUE,
+      'multilang' => TRUE,
+    ),
+    'contact_straat' => array(
+      'type' => 'textfield',
+      'label' => t('Street'),
+      'replace_tag' => 'straat',
+      'fieldset' => 'contact',
+      'description' => t('The street where the company is located (with number).'),
+      'required' => TRUE,
+      'multilang' => TRUE,
+    ),
+    'contact_postcode' => array(
+      'type' => 'textfield',
+      'label' => t('Postal code'),
+      'replace_tag' => 'postcode',
+      'fieldset' => 'contact',
+      'description' => t('The postal code of the city where the company is located.'),
+      'required' => TRUE,
+      'multilang' => TRUE,
+    ),
+    'contact_stad' => array(
+      'type' => 'textfield',
+      'label' => t('City'),
+      'replace_tag' => 'stad',
+      'fieldset' => 'contact',
+      'description' => t('The city where the company is located.'),
+      'required' => TRUE,
+      'multilang' => TRUE,
+    ),
+    'contact_telefoon' => array(
+      'type' => 'textfield',
+      'label' => t('Telephone'),
+      'replace_tag' => 'telefoon',
+      'fieldset' => 'contact',
+      'description' => t('The contact telephone number of the company.'),
+      'required' => TRUE,
+      'multilang' => TRUE,
+    ),
+    'contact_gsm' => array(
+      'type' => 'textfield',
+      'label' => t('Cellphone'),
+      'replace_tag' => 'gsm',
+      'fieldset' => 'contact',
+      'description' => t('The contact cellphone number of the company.'),
+      'multilang' => TRUE,
+    ),
+    'contact_email' => array(
+      'type' => 'textfield',
+      'label' => t('Email'),
+      'replace_tag' => 'email',
+      'fieldset' => 'contact',
+      'description' => t('The contact email address of the company.'),
+      'required' => TRUE,
+      'multilang' => TRUE,
+    ),
+    'contact_land' => array(
+      'type' => 'textfield',
+      'label' => t('Country'),
+      'replace_tag' => 'land',
+      'fieldset' => 'contact',
+      'description' => t('The country where the company is located.'),
+      'multilang' => TRUE,
+    ),
+    'contact_person_naam' => array(
+      'type' => 'textfield',
+      'label' => t('Name'),
+      'replace_tag' => 'contact_persoon',
+      'fieldset' => 'contact_person',
+      'description' => t('The name of the contact person.'),
+    ),
+    'contact_person_email' => array(
+      'type' => 'textfield',
+      'label' => t('Email'),
+      'replace_tag' => 'contact_persoon_email',
+      'fieldset' => 'contact_person',
+      'description' => t('The email of the contact person.'),
+    ),
+    'contact_person_telefoon' => array(
+      'type' => 'textfield',
+      'label' => t('Telephone'),
+      'replace_tag' => 'contact_persoon_telefoon',
+      'fieldset' => 'contact_person',
+      'description' => t('The telephone number of the contact person.'),
+    ),
+    'googleanalytics_account' => array(
+      'type' => 'textfield',
+      'label' => t('Google Analytics account code'),
+      'fieldset' => 'google_analytics',
+      'access_control' => 'custom settings ga',
+      'description' => t('The account code for the Google Analytics account for this website (e.g.: UA-1111111-1).'),
+      'multilang' => FALSE,
+    ),
+  );
+
+  variable_set('twompact_settings_fields', $fields);
+}
+
+/**
+ * Opbouwen van het formulier waarmee we de inhoud van de velden kunnen bijsturen.  We moeten rekening houden met het
+ * feit of het veld multilanguage moet zijn of niet.  Voor de custom velden die 2Mpact zelf toevoegt, hebben we dit volledig
+ * in de hand.  Voor de site-eigen variabelen zoals site_name, site_slogan, ... moeten we kijken naar de variabele
+ * variable_realm_list_language in de variable tabel en ahv die array bepalen of de site-eigen variabele moet vertaald
+ * kunnen worden.
+ */
+function twompact_settings_form() {
+  // we laten de array met fieldsets en fields opnieuw opslaan in Drupal in het geval er een aanpassing is gebeurd,
+  // het zijn enkel 2 variable_set() opdrachten, dus heeft niet veel invloed op de verdere verwerking qua snelheid.
+  twompact_settings_update_module_data();
+
+  // init van nodige variabelen
+  $field_access_control_result = TRUE; // variabele die we gebruiken om het resultaat van de permission check in bij te houden voor het veld dat we aan het behandelen zijn
+  $multilang = array();
+  $non_multilang = array();
+  $languages = language_list();
+
+  // fieldsets ophalen
+  $fieldsets = variable_get('twompact_settings_fieldsets', '');
+
+  /**
+   * We maken een array aan waarin we kunnen bijhouden of de fieldset waartoe een veld behoort reeds toegevoegd is aan het
+   * formulier in de correcte top-level fieldset (multilang en non-multilang), binnen de multilang fieldset moeten we ook
+   * rekening houden met alle talen.
+   */
+  $form_fieldsets = array('multilang' => array(), 'non_multilang' => array());
+
+  // voor elke taal een array toevoegen in de multilang array zodat we daar later de fieldsets aan kunnen toevoegen
+  if(!empty($languages) && is_array($languages)) {
+    foreach($languages as $language => $data) {
+      if($language == 'fr') {
+        continue;
+      }
+
+      $form_fieldsets['multilang'][$language] = array();
+    }
+  }
+
+  // basic form aanmaken
+  $form = array(
+    '#action' => '',
+    '#method' => 'post',
+    '#prefix' => '<div class="twompact_settings">',
+    '#suffix' => '</div>',
+  );
+
+  // voor elke fieldset moeten een variabele bijhouden of het reeds geprint is op het formulier in de top-level fieldsets (multilang en non-multilang)
+  if(!empty($fieldsets) && is_array($fieldsets)) {
+    foreach($fieldsets as $key => $data) {
+      $form_fieldsets['non_multilang'][$key] = FALSE;
+
+      if(!empty($languages) && is_array($languages)) {
+        foreach($languages as $language => $data) {
+          if($language == 'fr') {
+            continue;
+          }
+
+          $form_fieldsets['multilang'][$language][$key] = FALSE;
+        }
+      }
+    }
+  }
+
+  // fields ophalen
+  $fields = variable_get('twompact_settings_fields', '');
+
+  /**
+   *  we loopen door de velden en delen ze op in multilanguage vars en niet-multilanguage vars.  De multilanguage vars
+   *  worden in een omringende fieldset multilanguage gestoken waarbinnen we dan ook rekening houden met de fieldset
+   *  waar het veld zelf aan toebehoort.  Hetzelfde doen we daarna voor de niet-multilanguage vars.
+   */
+  if(!empty($fields) && is_array($fields)) {
+    // loopen door de velden
+    foreach($fields as $key => $data) {
+      if($data['multilang']) {
+        $multilang[$key] = $data;
+      }
+      else {
+        $non_multilang[$key] = $data;
+      }
+    }
+  }
+
+  // als de fields een array zijn en niet leeg is, voegen we de fields toe aan het formulier
+  if(!empty($fields) && is_array($fields)) {
+    if(!empty($multilang) && is_array($multilang)) {
+      // we voegen de top-level multilang fieldset toe aan het formulier
+      /*$form['multilang'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Multilanguage variables'),
+        '#collapsible' => TRUE,
+      );*/
+
+      if(!empty($languages) && is_array($languages)) {
+        foreach($languages as $language => $lang_data) {
+          if(!$lang_data->enabled || $language == 'fr') {
+            continue;
+          }
+
+          // per taal voegen we een fieldset toe zodat we een groepering hebben per taal
+          $form[$language] = array(
+            '#type' => 'fieldset',
+            '#title' => t($lang_data->name),
+            '#collapsible' => TRUE,
+            '#collapsed' => FALSE,
+          );
+
+          // loopen door de multilang velden
+          foreach($multilang as $key => $data) {
+            // sommige velden hebben een extra toegangscontrole naast het algemene toegangsrecht
+            $field_access_control = isset($data['access_control']) ? $data['access_control'] : TRUE;
+            // enkel rechten controleren als er een access control is ingesteld voor dit veld, standaard TRUE
+            if($field_access_control !== TRUE) {
+              $field_access_control_result = user_access($field_access_control);
+            }
+
+            // controleren of ingelogde gebruiker dit veld mag bijsturen
+            if($field_access_control_result) {
+              $fieldset = $data['fieldset'];
+
+              // we kijken na of we de fieldset voor dit veld nog moeten toevoegen aan deze top-level fieldset (multilang)
+              if(!empty($fieldset) && $form_fieldsets['multilang'][$language][$fieldset] === FALSE) {
+                // we voegen de fieldset toe aan deze top-level fieldset (multilang)
+                $form[$language][$fieldset] = array(
+                  '#type' => 'fieldset',
+                  '#title' => $fieldsets[$fieldset]['legend'],
+                  '#collapsible' => TRUE
+                );
+                // de fieldset is toegevoegd aan deze top-level fieldset, we zetten de variabele in de controle array op TRUE
+                $form_fieldsets['multilang'][$language][$fieldset] = TRUE;
+              }
+
+              // we maken het veld aan in Form API style, later voegen we het toe aan het formulier (afhankelijk van fieldset)
+              $field = array(
+                '#type' => $data['type'],
+                '#title' => $data['label'],
+                '#default_value' => variable_store_get('language', $language, $key, ''),
+                '#required' => isset($data['required']) ? $data['required'] : FALSE,
+              );
+
+              // niet elk veld zal een description hebben meegekregen
+              if(!empty($data['description'])) {
+                $field['#description'] = $data['description'];
+              }
+
+              // als er een fieldset is toegevoegd dan voegen we het veld toe aan deze fieldset binnen het form
+              if(!empty($fieldset) && $fieldset != '') {
+                $form[$language][$fieldset][$key . '_' . $language] = $field;
+              }
+              // anders voegen we het veld gewoon toe aan het formulier
+              else {
+                $form[$key . '_' . $language] = $field;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // we voegen de non-multilang velden toe aan het formulier
+    if(!empty($non_multilang) && is_array($non_multilang)) {
+      // er zijn non-multilang velden, dus we voegen een top-level fieldset toe om deze in te groeperen (per veld kunnen
+      // er nog onderliggende fieldsets bijkomen binnen deze top-level fieldset)
+      /*$form['non_multilang'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Non-Multilanguage variables'),
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+      );*/
+
+      // loopen door de veldjes
+      foreach($non_multilang as $key => $data) {
+        // sommige velden hebben een extra toegangscontrole naast het algemene toegangsrecht
+        $field_access_control = isset($data['access_control']) ? $data['access_control'] : TRUE;
+        // enkel rechten controleren als er een access control is ingesteld voor dit veld, standaard TRUE
+        if(!empty($field_access_control)) {
+          $field_access_control_result = user_access($field_access_control);
+        }
+
+        // controleren of ingelogde gebruiker dit veld mag bijsturen
+        if($field_access_control_result) {
+          // fieldset voor dit veld (if any) ophalen
+          $fieldset = $data['fieldset'];
+
+          // hebben we de fieldset voor dit veld reeds toegevoegd aan deze top-level fieldset (non-multilang)
+          if(!empty($fieldset) && $form_fieldsets['non_multilang'][$fieldset] === FALSE) {
+            // we maken de fieldset aan in deze top-level fieldset (non-multilang)
+            $form[$fieldset] = array(
+              '#type' => 'fieldset',
+              '#title' => $fieldsets[$fieldset]['legend'],
+              '#collapsible' => TRUE
+            );
+            // de fieldset is toegevoegd aan deze top-level fieldset, we zetten de variabele voor deze fieldset in de controle array op TRUE
+            $form_fieldsets['non_multilang'][$fieldset] = TRUE;
+          }
+
+          // we maken het veld aan in Form API style, later voegen we het toe aan het formulier (afhankelijk van fieldset)
+          $field = array(
+            '#type' => $data['type'],
+            '#title' => $data['label'],
+            '#default_value' => variable_get($key, ''),
+            '#required' => isset($data['required']) ? $data['required'] : FALSE,
+          );
+
+          // niet elk veld zal een description hebben meegekregen
+          if(!empty($data['description'])) {
+            $field['#description'] = $data['description'];
+          }
+
+          // als er een fieldset is toegevoegd dan voegen we het veld toe aan deze fieldset binnen het form
+          if(!empty($fieldset) && $fieldset != '') {
+            $form[$fieldset][$key] = $field;
+          }
+          // anders voegen we het veld gewoon toe aan het formulier
+          else {
+            $form[$key] = $field;
+          }
+        }
+      }
+    }
+  }
+
+  $form['submit_twompact_settings'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
+
+  // resultaat returnen
+  return $form;
+}
+
+/**
+ *
+ * @param array $form
+ * @param array $form_state
+ */
+function twompact_settings_form_submit($form, &$form_state) {
+  // values uit array halen
+  $values = $form_state['values'];
+
+  // verwijderen van standard Drupal form values
+  unset($values['form_build_id']);
+  unset($values['form_token']);
+  unset($values['form_id']);
+  unset($values['op']);
+  unset($values['submit_twompact_settings']);
+
+  // talen ophalen
+  $languages = language_list();
+  $default_language = language_default()->language;
+
+  // multilanguage variabelen behandelen
+  if(!empty($languages) && is_array($languages)) {
+    foreach($languages as $language => $data) {
+      foreach($values as $key => $value) {
+        $pos = strrpos($key, '_');
+        $lang_check = substr($key, $pos);
+
+        if($lang_check == '_' . $language) {
+          $new_key = substr($key, 0, strlen($key)-3);
+          $value = trim($value);
+          variable_store_set('language', $language, $new_key, $value);
+          unset($values[$key]);
+
+          // we slaan de multilanguage velden voor de default taal ook op in de standaard variabele tabel
+          if($language == $default_language) {
+            variable_set($new_key, $value);
+          }
+        }
+      }
+    }
+  }
+
+  // non-multilanguage variabelen behandelen
+  if(!empty($values) && is_array($values)) {
+    foreach($values as $key => $value) {
+      // we trimmen alle values voor alle zekerheid (elimineert ingaves van enkel spaties)
+      $value = trim($value);
+      variable_set($key, $value);
+    }
+  }
+
+  drupal_set_message(t('The settings have been saved.'));
+}
+
+/**
+ * Deze functie haalt alle replace tags op en de waarde die de tag moet vervangen.
+ */
+function twompact_settings_get_replace_tags() {
+  global $language;
+
+  $lang = $language->language;
+  // de resultaat array die we gaan opvullen
+  $result = array();
+
+  // alle fields ophalen
+  $fields = variable_get('twompact_settings_fields', '');
+
+  // enkel doorlopen als het een array is en niet leeg is
+  if(!empty($fields) && is_array($fields)) {
+    foreach($fields as $key => $values) {
+      if(isset($values['replace_tag']) && !empty($values['replace_tag'])) {
+        if(isset($values['multilang']) && $values['multilang']) {
+          $result[$values['replace_tag']] = variable_store_get('language', $lang, $key);
+        }
+        else {
+          $result[$values['replace_tag']] = variable_get($key, '');
+        }
+      }
+    }
+  }
+
+  return $result;
+}
+
+/**
+ * Aanmaken van de tokens zodat Drupal weet wat er vervangen moet worden
+ */
+function twompact_settings_token_info() {
+  // de verschillende velden ophalen waar we dan tokens van maken
+  $fields = variable_get('twompact_settings_fields', '');
+
+  $info['types']['2mpact'] = array(
+    'name' => '2Mpact tokens',
+    'description' => t('The custom tokens added by 2Mpact'),
+  );
+
+  // de tokens toevoegen voor deze module
+  if(!empty($fields) && is_array($fields)) {
+    foreach($fields as $tag => $values) {
+      if(isset($values['replace_tag']) && !empty($values['replace_tag'])) {
+        $info['tokens']['2mpact'][$values['replace_tag']] = array(
+          'name' => $values['label'],
+          'description' => $values['description'],
+        );
+      }
+    }
+  }
+
+  return $info;
+}
+
+/**
+ * Replace waarde geven aan de tokens voor deze module
+ *
+ * @param string $type    Het type van tokens
+ * @param array $tokens    De tokens die zijn ingegeven voor het huidige type
+ * @param array $data
+ * @param array $options
+ */
+function twompact_settings_tokens($type, $tokens, $data = array(), $options = array()) {
+  // resultaat array aanmaken
+  $replacements = array();
+
+  // replace waardes ophalen
+  $replace_values = twompact_settings_get_replace_tags();
+
+  if($type == '2mpact') {
+    foreach($tokens as $name => $original) {
+      $replacements[$original] = $replace_values[$name];
+    }
+  }
+
+  return $replacements;
+}

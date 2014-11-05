@@ -1,0 +1,6 @@
+name = twompact_settings
+description = Custom instellingen voor Drupal door 2Mpact
+core = 7.x
+package = 2Mpact
+files[] = twompact_settings.install
+files[] = twompact_settings.module
