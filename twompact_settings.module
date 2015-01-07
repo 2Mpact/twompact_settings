@@ -37,6 +37,10 @@ function twompact_settings_permission() {
         'title' => t('Change Google Analytics code'),
         'description' => t('Determines whether the logged in user may change the Google Analytics code for this website.'),
       ),
+      'custom settings mailchimp' => array(
+        'title' => t('Change MailChimp API key'),
+        'description' => t('Determines whether the logged in user may change the MailChimp API key for this website.'),
+      ),
     );
 }
 
@@ -108,6 +112,10 @@ function twompact_settings_update_module_data() {
       'legend' => 'Google Analytics',
       'collapsible' => TRUE,
     ),
+    'mailchimp' => array(
+      'legend' => 'MailChimp',
+      'collapsible' => TRUE,
+    ),
   );
 
   variable_set('twompact_settings_fieldsets', $fieldsets);
@@ -136,7 +144,6 @@ function twompact_settings_update_module_data() {
       'replace_tag' => 'bedrijf',
       'fieldset' => 'contact',
       'description' => t('The name of the company.'),
-      'required' => TRUE,
       'multilang' => TRUE,
     ),
     'contact_straat' => array(
@@ -145,7 +152,6 @@ function twompact_settings_update_module_data() {
       'replace_tag' => 'straat',
       'fieldset' => 'contact',
       'description' => t('The street where the company is located (with number).'),
-      'required' => TRUE,
       'multilang' => TRUE,
     ),
     'contact_postcode' => array(
@@ -154,7 +160,6 @@ function twompact_settings_update_module_data() {
       'replace_tag' => 'postcode',
       'fieldset' => 'contact',
       'description' => t('The postal code of the city where the company is located.'),
-      'required' => TRUE,
       'multilang' => TRUE,
     ),
     'contact_stad' => array(
@@ -163,7 +168,6 @@ function twompact_settings_update_module_data() {
       'replace_tag' => 'stad',
       'fieldset' => 'contact',
       'description' => t('The city where the company is located.'),
-      'required' => TRUE,
       'multilang' => TRUE,
     ),
     'contact_telefoon' => array(
@@ -172,7 +176,6 @@ function twompact_settings_update_module_data() {
       'replace_tag' => 'telefoon',
       'fieldset' => 'contact',
       'description' => t('The contact telephone number of the company.'),
-      'required' => TRUE,
       'multilang' => TRUE,
     ),
     'contact_gsm' => array(
@@ -189,7 +192,6 @@ function twompact_settings_update_module_data() {
       'replace_tag' => 'email',
       'fieldset' => 'contact',
       'description' => t('The contact email address of the company.'),
-      'required' => TRUE,
       'multilang' => TRUE,
     ),
     'contact_land' => array(
@@ -229,6 +231,14 @@ function twompact_settings_update_module_data() {
       'description' => t('The account code for the Google Analytics account for this website (e.g.: UA-1111111-1).'),
       'multilang' => FALSE,
     ),
+    'mailchimp_account' => array(
+      'type' => 'textfield',
+      'label' => t('MailChimp API key'),
+      'fieldset' => 'mailchimp',
+      'access_control' => 'custom settings mailchimp',
+      'description' => t('The API key for the MailChimp account to which we will be subscribing (e.g.: 198b4zbrvwq1b5bzf4abt8qsvds94bz9-us1).'),
+      'multilang' => FALSE,
+    ),
   );
 
   variable_set('twompact_settings_fields', $fields);
@@ -265,10 +275,6 @@ function twompact_settings_form() {
   // voor elke taal een array toevoegen in de multilang array zodat we daar later de fieldsets aan kunnen toevoegen
   if(!empty($languages) && is_array($languages)) {
     foreach($languages as $language => $data) {
-      if($language == 'fr') {
-        continue;
-      }
-
       $form_fieldsets['multilang'][$language] = array();
     }
   }
@@ -288,10 +294,6 @@ function twompact_settings_form() {
 
       if(!empty($languages) && is_array($languages)) {
         foreach($languages as $language => $data) {
-          if($language == 'fr') {
-            continue;
-          }
-
           $form_fieldsets['multilang'][$language][$key] = FALSE;
         }
       }
@@ -330,7 +332,7 @@ function twompact_settings_form() {
 
       if(!empty($languages) && is_array($languages)) {
         foreach($languages as $language => $lang_data) {
-          if(!$lang_data->enabled || $language == 'fr') {
+          if(!$lang_data->enabled) {
             continue;
           }
 
@@ -372,7 +374,7 @@ function twompact_settings_form() {
                 '#type' => $data['type'],
                 '#title' => $data['label'],
                 '#default_value' => variable_store_get('language', $language, $key, ''),
-                '#required' => isset($data['required']) ? $data['required'] : FALSE,
+                //'#required' => isset($data['required']) ? $data['required'] : FALSE,
               );
 
               // niet elk veld zal een description hebben meegekregen
@@ -436,7 +438,7 @@ function twompact_settings_form() {
             '#type' => $data['type'],
             '#title' => $data['label'],
             '#default_value' => variable_get($key, ''),
-            '#required' => isset($data['required']) ? $data['required'] : FALSE,
+            //'#required' => isset($data['required']) ? $data['required'] : FALSE,
           );
 
           // niet elk veld zal een description hebben meegekregen
