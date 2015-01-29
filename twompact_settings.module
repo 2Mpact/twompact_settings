@@ -530,6 +530,8 @@ function twompact_settings_get_replace_tags($options) {
     }
   }
 
+  $result['blijfopdehoogte_block'] = module_invoke('twompact_blijfopdehoogte', 'block_view', 'blijfopdehoogte_subscribe_form');
+
   return $result;
 }
 
@@ -556,6 +558,12 @@ function twompact_settings_token_info() {
       }
     }
   }
+
+  // custom token toevoegen voor block embed via token
+  $info['tokens']['2mpact']['blijfopdehoogte_blok'] = array(
+    'name' => t('Stay in touch block'),
+    'description' => t('This token will print the stay in touch block'),
+  );
 
   return $info;
 }
