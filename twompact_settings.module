@@ -104,10 +104,6 @@ function twompact_settings_update_module_data() {
       'legend' => t('Contact data'),
       'collapsible' => TRUE,
     ),
-    'contact_person' => array(
-      'legend' => t('Contact person'),
-      'collapsible' => TRUE,
-    ),
     'google_analytics' => array(
       'legend' => 'Google Analytics',
       'collapsible' => TRUE,
@@ -201,27 +197,6 @@ function twompact_settings_update_module_data() {
       'fieldset' => 'contact',
       'description' => t('The country where the company is located.'),
       'multilang' => TRUE,
-    ),
-    'contact_person_naam' => array(
-      'type' => 'textfield',
-      'label' => t('Name'),
-      'replace_tag' => 'contact_persoon',
-      'fieldset' => 'contact_person',
-      'description' => t('The name of the contact person.'),
-    ),
-    'contact_person_email' => array(
-      'type' => 'textfield',
-      'label' => t('Email'),
-      'replace_tag' => 'contact_persoon_email',
-      'fieldset' => 'contact_person',
-      'description' => t('The email of the contact person.'),
-    ),
-    'contact_person_telefoon' => array(
-      'type' => 'textfield',
-      'label' => t('Telephone'),
-      'replace_tag' => 'contact_persoon_telefoon',
-      'fieldset' => 'contact_person',
-      'description' => t('The telephone number of the contact person.'),
     ),
     'googleanalytics_account' => array(
       'type' => 'textfield',
@@ -525,10 +500,16 @@ function twompact_settings_form_submit($form, &$form_state) {
 /**
  * Deze functie haalt alle replace tags op en de waarde die de tag moet vervangen.
  */
-function twompact_settings_get_replace_tags() {
+function twompact_settings_get_replace_tags($options) {
   global $language;
 
-  $lang = $language->language;
+  if(isset($options['language']) && !empty($options['language'])) {
+    $lang = $options['language']->language;
+  }
+  else {
+    $lang = $language->language;
+  }
+
   // de resultaat array die we gaan opvullen
   $result = array();
 
@@ -592,7 +573,7 @@ function twompact_settings_tokens($type, $tokens, $data = array(), $options = ar
   $replacements = array();
 
   // replace waardes ophalen
-  $replace_values = twompact_settings_get_replace_tags();
+  $replace_values = twompact_settings_get_replace_tags($options);
 
   if($type == '2mpact') {
     foreach($tokens as $name => $original) {

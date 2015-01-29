@@ -1,0 +1,219 @@
+# $Id$
+#
+# French translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  twompact_settings.module: n/a
+#  twompact_settings.info: n/a
+#  twompact_settings.install: n/a
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2015-01-29 13:17+0100\n"
+"PO-Revision-Date: 2015-01-29 13:44+0100\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: French <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#: twompact_settings.module:5 twompact_settings.info:0
+msgid "2Mpact"
+msgstr "2Mpact"
+
+#: twompact_settings.module:14
+msgid "Custom settings"
+msgstr "Réglages personnalisés"
+
+#: twompact_settings.module:15
+msgid "Set custom settings"
+msgstr "Définir des paramètres personnalisés"
+
+#: twompact_settings.module:33
+msgid "Administer custom settings"
+msgstr "Administrer les paramètres personnalisés"
+
+#: twompact_settings.module:34
+msgid "Determines whether the logged in user has access to custom settings."
+msgstr ""
+"Détermine si l'utilisateur connecté a accès à des paramètres personnalisés."
+
+#: twompact_settings.module:37
+msgid "Change Google Analytics code"
+msgstr "Changer le code de Google Analytics"
+
+#: twompact_settings.module:38
+msgid ""
+"Determines whether the logged in user may change the Google Analytics code "
+"for this website."
+msgstr ""
+"Détermine si l'utilisateur connecté peut changer le code Google Analytics "
+"pour ce site."
+
+#: twompact_settings.module:41
+msgid "Change MailChimp API key"
+msgstr "Changer MailChimp clé API"
+
+#: twompact_settings.module:42
+msgid ""
+"Determines whether the logged in user may change the MailChimp API key for "
+"this website."
+msgstr ""
+"Détermine si l'utilisateur connecté peut changer la clé API MailChimp pour "
+"ce site."
+
+#: twompact_settings.module:100
+msgid "Standard settings"
+msgstr "Réglages standard"
+
+#: twompact_settings.module:104 twompact_settings.install:50
+msgid "Contact data"
+msgstr "Les données de contact"
+
+#: twompact_settings.module:108
+msgid "Contact person"
+msgstr "personne de contact"
+
+#: twompact_settings.module:128 twompact_settings.install:64
+msgid "Site name"
+msgstr "Nom du site"
+
+#: twompact_settings.module:130 twompact_settings.install:66
+msgid "The site name (usually the company name)."
+msgstr "Le nom du site (généralement le nom de l'entreprise)."
+
+#: twompact_settings.module:135 twompact_settings.install:71
+msgid "Site slogan"
+msgstr "Slogan du site"
+
+#: twompact_settings.module:138 twompact_settings.install:74
+msgid "The site slogan (usually the company slogan, if any)."
+msgstr "Le slogan du site (généralement le slogan de l'entreprise)."
+
+#: twompact_settings.module:143 twompact_settings.install:79
+msgid "Company name"
+msgstr "Nom de l'entreprise"
+
+#: twompact_settings.module:146 twompact_settings.install:82
+msgid "The name of the company."
+msgstr "Le nom de l'entreprise"
+
+#: twompact_settings.module:151 twompact_settings.install:88
+msgid "Street"
+msgstr "Rue"
+
+#: twompact_settings.module:154 twompact_settings.install:91
+msgid "The street where the company is located (with number)."
+msgstr "La rue où se trouve l'entreprise (avec numéro)."
+
+#: twompact_settings.module:159 twompact_settings.install:97
+msgid "Postal code"
+msgstr "Code Postal"
+
+#: twompact_settings.module:162 twompact_settings.install:100
+msgid "The postal code of the city where the company is located."
+msgstr "Le code postal de la ville où se trouve l'entreprise."
+
+#: twompact_settings.module:167 twompact_settings.install:106
+msgid "City"
+msgstr "Ville"
+
+#: twompact_settings.module:170 twompact_settings.install:109
+msgid "The city where the company is located."
+msgstr "La ville où se trouve l'entreprise."
+
+#: twompact_settings.module:175;221 twompact_settings.install:115
+msgid "Telephone"
+msgstr "Téléphone"
+
+#: twompact_settings.module:178 twompact_settings.install:118
+msgid "The contact telephone number of the company."
+msgstr "Le numéro de téléphone de contact de l'entreprise."
+
+#: twompact_settings.module:183 twompact_settings.install:124
+msgid "Cellphone"
+msgstr "Téléphone Cellulaire"
+
+#: twompact_settings.module:186 twompact_settings.install:127
+msgid "The contact cellphone number of the company."
+msgstr "Le nombre de contact de téléphone portable de l'entreprise."
+
+#: twompact_settings.module:191;214 twompact_settings.install:132
+msgid "Email"
+msgstr "Email"
+
+#: twompact_settings.module:194 twompact_settings.install:135
+msgid "The contact email address of the company."
+msgstr "L'adresse email de contact de l'entreprise"
+
+#: twompact_settings.module:199 twompact_settings.install:141
+msgid "Country"
+msgstr "Pays"
+
+#: twompact_settings.module:202 twompact_settings.install:144
+msgid "The country where the company is located."
+msgstr "Le pays où l'entreprise est situé."
+
+#: twompact_settings.module:207
+msgid "Name"
+msgstr "Nom"
+
+#: twompact_settings.module:210
+msgid "The name of the contact person."
+msgstr "Le nom de la personne de contact."
+
+#: twompact_settings.module:217
+msgid "The email of the contact person."
+msgstr "L'e-mail de la personne de contact."
+
+#: twompact_settings.module:224
+msgid "The telephone number of the contact person."
+msgstr "Le numéro de téléphone de la personne de contact."
+
+#: twompact_settings.module:228 twompact_settings.install:149
+msgid "Google Analytics account code"
+msgstr "Google Analytics account code"
+
+#: twompact_settings.module:231 twompact_settings.install:152
+msgid ""
+"The account code for the Google Analytics account for this website (e.g.: "
+"UA-1111111-1)."
+msgstr ""
+"Le code de compte pour les compte Google Analytics pour ce site (par "
+"exemple: UA-1111111-1)."
+
+#: twompact_settings.module:236
+msgid "MailChimp API key"
+msgstr "MailChimp API clé"
+
+#: twompact_settings.module:239
+msgid ""
+"The API key for the MailChimp account to which we will be subscribing (e.g.: "
+"198b4zbrvwq1b5bzf4abt8qsvds94bz9-us1)."
+msgstr ""
+"La clé de l'API pour le compte MailChimp à laquelle nous allons être abonnés "
+"(par exemple: 198b4zbrvwq1b5bzf4abt8qsvds94bz9-US1)."
+
+#: twompact_settings.module:464
+msgid "Save"
+msgstr "Enregistrer"
+
+#: twompact_settings.module:522
+msgid "The settings have been saved."
+msgstr "Les paramètres ont été enregistrés."
+
+#: twompact_settings.module:564
+msgid "The custom tokens added by 2Mpact"
+msgstr "Les jetons personnalisés ajoutées par 2Mpact"
+
+#: twompact_settings.info:0
+msgid "twompact_settings"
+msgstr "twompact_settings"
+
+#: twompact_settings.info:0
+msgid "Custom instellingen voor Drupal door 2Mpact"
+msgstr "Les paramètres personnalisés pour Drupal par 2Mpact"
