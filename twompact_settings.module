@@ -560,8 +560,8 @@ function twompact_settings_token_info() {
   }
 
   // custom token toevoegen voor block embed via token
-  $info['tokens']['2mpact']['blijfopdehoogte_blok'] = array(
-    'name' => t('Stay in touch block'),
+  $info['tokens']['2mpact']['blijfopdehoogte_block'] = array(
+    'name' => '',
     'description' => t('This token will print the stay in touch block'),
   );
 
@@ -585,7 +585,12 @@ function twompact_settings_tokens($type, $tokens, $data = array(), $options = ar
 
   if($type == '2mpact') {
     foreach($tokens as $name => $original) {
-      $replacements[$original] = $replace_values[$name];
+      if($name == 'blijfopdehoogte_block') {
+        $replacements[$original] = $replace_values[$name]['content'];
+      }
+      else {
+        $replacements[$original] = $replace_values[$name];
+      }
     }
   }
 
