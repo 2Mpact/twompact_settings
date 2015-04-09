@@ -500,7 +500,7 @@ function twompact_settings_form_submit($form, &$form_state) {
 /**
  * Deze functie haalt alle replace tags op en de waarde die de tag moet vervangen.
  */
-function twompact_settings_get_replace_tags($options) {
+function twompact_settings_get_replace_tags($options, $tokens) {
   global $language;
 
   if(isset($options['language']) && !empty($options['language'])) {
@@ -530,7 +530,10 @@ function twompact_settings_get_replace_tags($options) {
     }
   }
 
-  $result['blijfopdehoogte_block'] = module_invoke('twompact_blijfopdehoogte', 'block_view', 'blijfopdehoogte_subscribe_form');
+  if(array_key_exists('blijfopdehoogte_block', $tokens)) {
+    $result['blijfopdehoogte_block'] = module_invoke('twompact_blijfopdehoogte', 'block_view', 'blijfopdehoogte_subscribe_blok');
+  }
+
 
   return $result;
 }
@@ -561,7 +564,7 @@ function twompact_settings_token_info() {
 
   // custom token toevoegen voor block embed via token
   $info['tokens']['2mpact']['blijfopdehoogte_block'] = array(
-    'name' => '',
+    'name' => t('Stay in touch block'),
     'description' => t('This token will print the stay in touch block'),
   );
 
@@ -580,10 +583,12 @@ function twompact_settings_tokens($type, $tokens, $data = array(), $options = ar
   // resultaat array aanmaken
   $replacements = array();
 
-  // replace waardes ophalen
-  $replace_values = twompact_settings_get_replace_tags($options);
 
   if($type == '2mpact') {
+    // Replace waardes ophalen
+    // Variabele Tokens voor onze Block Tokens
+    $replace_values = twompact_settings_get_replace_tags($options, $tokens);
+
     foreach($tokens as $name => $original) {
       if($name == 'blijfopdehoogte_block') {
         $replacements[$original] = $replace_values[$name]['content'];
