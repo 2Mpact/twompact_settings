@@ -198,6 +198,14 @@ function twompact_settings_update_module_data() {
       'description' => t('The country where the company is located.'),
       'multilang' => TRUE,
     ),
+    'contact_rechtbank' => array(
+      'type' => 'textfield',
+      'label' => t('Court of Justice District'),
+      'replace_tag' => 'rechtbank',
+      'fieldset' => 'contact',
+      'description' => t('The district where the court of justice is located.'),
+      'multilang' => TRUE,
+    ),
     'googleanalytics_account' => array(
       'type' => 'textfield',
       'label' => t('Google Analytics account code'),
@@ -534,6 +542,19 @@ function twompact_settings_get_replace_tags($options, $tokens) {
     $result['blijfopdehoogte_block'] = module_invoke('twompact_blijfopdehoogte', 'block_view', 'blijfopdehoogte_subscribe_blok');
   }
 
+  if(!user_is_logged_in()) {
+    if(array_key_exists('loggedin_block', $tokens)) {
+      $result['loggedin_block'] = module_invoke('twompact_login', 'block_view', 'login_loggedin_box');
+    }
+  }
+
+  if(array_key_exists('ga_page', $tokens)) {
+    $result['loggedin_block'] = module_invoke('google_analytics_reports', 'block_view', 'path-mini');
+  }
+
+  if(array_key_exists('ga_site', $tokens)) {
+    $result['loggedin_block'] = module_invoke('google_analytics_reports', 'block_view', 'dashboard');
+  }
 
   return $result;
 }
@@ -562,10 +583,26 @@ function twompact_settings_token_info() {
     }
   }
 
-  // custom token toevoegen voor block embed via token
+  // custom token toevoegen voor block embed via token voor blijf op de hoogte blok
   $info['tokens']['2mpact']['blijfopdehoogte_block'] = array(
     'name' => t('Stay in touch block'),
     'description' => t('This token will print the stay in touch block'),
+  );
+
+  // custom token toevoegen voor block embed via token voor logged in blok
+  $info['tokens']['2mpact']['loggedin_block'] = array(
+    'name' => t('Logged in block'),
+    'description' => t('This token will print the logged in block'),
+  );
+
+  $info['tokens']['2mpact']['ga_page'] = array(
+    'name' => t('Google Analytics page statistics'),
+    'description' => t('This token will show the Google Analytics page statistics block.'),
+  );
+
+  $info['tokens']['2mpact']['ga_site'] = array(
+    'name' => t('Google Analytics site statistics'),
+    'description' => t('This token will show the Google Analytics site statistics block.'),
   );
 
   return $info;
@@ -590,8 +627,10 @@ function twompact_settings_tokens($type, $tokens, $data = array(), $options = ar
     $replace_values = twompact_settings_get_replace_tags($options, $tokens);
 
     foreach($tokens as $name => $original) {
-      if($name == 'blijfopdehoogte_block') {
-        $replacements[$original] = $replace_values[$name]['content'];
+      if($name == 'blijfopdehoogte_block' || $name == 'loggedin_block' || $name == 'ga_page' || $name == 'ga_site') {
+        if(isset($replace_values[$name])) {
+          $replacements[$original] = $replace_values[$name]['content'];
+        }
       }
       else {
         $replacements[$original] = $replace_values[$name];

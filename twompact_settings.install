@@ -144,6 +144,14 @@ function twompact_settings_install() {
       'description' => t('The country where the company is located.'),
       'multilang' => TRUE,
     ),
+    'contact_rechtbank' => array(
+      'type' => 'textfield',
+      'label' => t('Court of Justice District'),
+      'replace_tag' => 'rechtbank',
+      'fieldset' => 'contact',
+      'description' => t('The district where the court of justice is located.'),
+      'multilang' => TRUE,
+    ),
     'googleanalytics_account' => array(
       'type' => 'textfield',
       'label' => t('Google Analytics account code'),
@@ -164,6 +172,7 @@ function twompact_settings_install() {
   variable_set('contact_telefoon', '+32 (0)9 233 48 66');
   variable_set('contact_email', 'info@2mpact.be');
   variable_set('contact_land', 'België');
+  variable_set('contact_rechtbank', 'Gent');
 
   // kijken of er meerdere talen zijn ingesteld en waar nodig de standaard waarden ingeven voor een multilang systeem
   $languages = language_list();
@@ -177,6 +186,7 @@ function twompact_settings_install() {
       variable_store_set('language', $language, 'contact_telefoon', '+32 (0)9 233 48 66');
       variable_store_set('language', $language, 'contact_email', 'info@2mpact.be');
       variable_store_set('language', $language, 'contact_land', 'België');
+      variable_store_set('language', $language, 'contact_rechtbank', 'Gent');
     }
   }
 }
