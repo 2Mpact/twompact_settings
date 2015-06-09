@@ -182,6 +182,14 @@ function twompact_settings_update_module_data() {
       'description' => t('The contact cellphone number of the company.'),
       'multilang' => TRUE,
     ),
+    'contact_fax' => array(
+      'type' => 'textfield',
+      'label' => t('Fax'),
+      'replace_tag' => 'fax',
+      'fieldset' => 'contact',
+      'description' => t('The contact fax number of the company.'),
+      'multilang' => TRUE,
+    ),
     'contact_email' => array(
       'type' => 'textfield',
       'label' => t('Email'),
